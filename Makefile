@@ -1,6 +1,6 @@
-PRESENTATION=example
+PRESENTATION=couchbase-and-rails
 
-example.pdf: $(PRESENTATION).tex beamerthemecouchbase.sty
+pdf: $(PRESENTATION).tex beamerthemecouchbase.sty
 	lualatex $(PRESENTATION).tex
 
 compress: $(PRESENTATION).pdf

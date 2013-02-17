@@ -6,10 +6,10 @@
 % Fonts
 \setbeamerfont{title}{series={\bfseries},size=\Huge}
 \setbeamerfont{author}{series={\bfseries},size=\Large}
-\setbeamerfont{section title}{series={\bfseries},size=\LARGE}
+\setbeamerfont{section title}{series={\bfseries},size=\Huge}
 \setbeamerfont{structure}{series={\bfseries}}
 \setbeamertemplate{items}[circle]
-\setbeamerfont{itemize/enumerate body}{size=\Large}
+\setbeamerfont{itemize/enumerate body}{size=\large}
 
 % Colors
 \setbeamercolor{titlelike}{fg=white}
@@ -47,6 +47,19 @@
   \end{centering}
 }
 
+\newcommand{\claim}[2]
+{
+  \begin{center}
+    {\Huge\bfseries #1}
+    \vskip2em
+    \begin{minipage}{60ex}
+      \begin{center}
+        \emph{#2}
+      \end{center}
+    \end{minipage}
+  \end{center}
+}
+
 \def\titleback
 {
   \setbeamertemplate{background}
@@ -78,7 +91,7 @@
     \begin{beamercolorbox}[center]{title}
       \usebeamerfont{section title}
       \begin{center}
-        Thanks
+        Thank you
       \end{center}
       \begin{center}
         Questions?
