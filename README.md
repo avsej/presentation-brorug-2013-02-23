@@ -12,8 +12,4 @@ Install dependencies
 
 Build the PDF file
 
-    make pdf
-
-Optionally compress the result
-
-    make compress
+    make
