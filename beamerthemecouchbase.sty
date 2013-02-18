@@ -60,6 +60,15 @@
   \end{center}
 }
 
+\newcommand{\fullpageimage}[1]
+{
+  \setbeamertemplate{background}
+    {\includegraphics[width=\paperwidth,height=\paperheight]{#1}}
+  \begin{frame}[plain]
+  \end{frame}
+  \normalback
+}
+
 \def\titleback
 {
   \setbeamertemplate{background}
