@@ -293,7 +293,7 @@
   \begin{semiverbatim}
   function (keys, values, rereduce) \{
     var ret = \{sum: 0, count: 0\};
-    if (\alert<2,3>{rereduce}) \{
+    if (\alert<2,3>{rereduce}) \{ \only<2-3>{//} \only<3>{\alert{true}}\only<2>{\alert{false}}
       \alert<3>{for (var i = 0; i < values.length; ++i) \{
         ret.sum += values[i].sum;
         ret.count += values[i].count;
