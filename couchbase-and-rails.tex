@@ -153,124 +153,6 @@
   \end{verbatim}
 \end{frame}
 
-
-\tikzstyle{doc} = [
-  rectangle,
-  on chain,
-  on grid,
-  draw,
-  font=\ttfamily,
-  align=left,
-  inner xsep=1ex,
-  text width=12em,
-]
-
-\tikzstyle{ndoc} = [
-  doc,
-  text width=7em,
-]
-\tikzstyle{code} = [
-  on chain,
-  on grid,
-  font=\ttfamily,
-]
-\tikzstyle{dim} = [gray!20]
-\tikzstyle{hide} = [white]
-
-\tikzset{onslide/.code args={<#1>#2}{
-  \only<#1>{\pgfkeysalso{#2}}
-}}
-
-
-\begin{frame}[fragile]{Views: How It Works: Map}
-  \begin{tikzpicture}[
-      >=latex,
-      start chain=going below,
-      node distance=1mm and 60mm,
-      every join/.style={white},
-      thick,
-      auto
-    ]
-    \node[doc]                          (b1) {\{"type":"beer",...\}};
-    \node[doc, onslide=<2->{dim}, join]      {\{"type":"brewery",...\}};
-    \node[doc, join]                    (b2) {\{"type":"beer",...\}};
-    \node[doc, onslide=<2->{dim}, join] (c)  {\{"type":"brewery",...\}};
-    \node[doc, onslide=<2->{dim}, join]      {\{"type":"brewery",...\}};
-    \node[doc, join]                    (b3) {\{"type":"beer",...\}};
-    \node[doc, join]                    (b4) {\{"type":"beer",...\}};
-
-    \node[code, right=of c, onslide=<1>{hide}] (f) {emit(doc.category, doc.abv)};
-
-
-    \path[->, onslide=<1>{hide}] (b1.east) edge (f);
-    \path[->, onslide=<1>{hide}] (b2.east) edge (f);
-    \path[->, onslide=<1>{hide}] (b3.east) edge (f);
-    \path[->, onslide=<1>{hide}] (b4.east) edge (f);
-  \end{tikzpicture}
-\end{frame}
-
-\begin{frame}[fragile]{Views: How It Works: Reduce}
-  \begin{tikzpicture}[
-      >=latex,
-      start chain=going below,
-      node distance=1mm and 60mm,
-      every join/.style={white},
-      thick,
-      auto
-    ]
-
-    \node[doc]        (r1)  {["German Ale", 5.2]};
-    \node[doc, join]  (r2)  {["German Ale", 5.7]};
-    \node[doc, join]  (r3)  {["German Lager", 6.3]};
-    \node[doc, join]  (r4)  {["German Lager", 6.0]};
-    \node[doc, join]  (r5)  {["German Lager", 6.2]};
-    \node[doc, join]  (r6)  {["German Lager", 6.4]};
-    \node[doc, join]  (r7)  {["Irish Ale", 5.8]};
-    \node[doc, join]  (r8)  {["Irish Ale", 6.1]};
-    \node[doc, join]  (r9)  {["Irish Ale", 5.1]};
-
-    \node[code, right=of r5, onslide=<-1>{hide}] (f) {reduce(keys, values, false)};
-    \path[->, onslide=<1-2>{hide}] (f) edge (f);
-
-    \path[->, onslide=<1>{hide}] (r1.east) edge (f);
-    \path[->, onslide=<1>{hide}] (r2.east) edge (f);
-    \path[->, onslide=<1>{hide}] (r3.east) edge (f);
-    \path[->, onslide=<1>{hide}] (r4.east) edge (f);
-    \path[->, onslide=<1>{hide}] (r5.east) edge (f);
-    \path[->, onslide=<1>{hide}] (r6.east) edge (f);
-    \path[->, onslide=<1>{hide}] (r7.east) edge (f);
-    \path[->, onslide=<1>{hide}] (r8.east) edge (f);
-    \path[->, onslide=<1>{hide}] (r9.east) edge (f);
-
-    % hack
-  \end{tikzpicture}
-\end{frame}
-
-
-
-\begin{frame}[fragile]{Views: How It Works: Rereduce}
-  \begin{tikzpicture}[
-      >=latex,
-      start chain=going below,
-      node distance=1mm and 60mm,
-      every join/.style={white},
-      thick,
-      auto
-    ]
-
-    \node[ndoc] (r1){\{"count": 4, "sum": 23.2, "avg": 5.8 \}};
-    \node[ndoc, join] (r2){\{"count": 3, "sum": 18.4, "avg": 6.13\}};
-    \node[ndoc, join] (r3){\{"count": 2, "sum": 11.2, "avg": 5.6\}};
-
-    \node[code, right=of r2, onslide=<1>{hide}] (f) {reduce(null, values, true)};
-    \path[->, onslide=<1-2>{hide}] (f) edge (f);
-
-    \path[->, onslide=<1>{hide}] (r1.east) edge (f);
-    \path[->, onslide=<1>{hide}] (r2.east) edge (f);
-    \path[->, onslide=<1>{hide}] (r3.east) edge (f);
-  \end{tikzpicture}
-\end{frame}
-
 \begin{frame}[fragile]{Views: Generator}
   \begin{verbatim}
   $ rails generate couchbase:view beer avg_by_category
@@ -280,6 +162,8 @@
 \end{frame}
 
 \begin{frame}[fragile]{Views: Map}
+  Find average Alcohol by Volume (ABV) for each category
+
   \begin{verbatim}
   function(doc, meta) {
     if (doc.type == "beer" && doc.category && doc.abv > 0) {
@@ -289,53 +173,164 @@
   \end{verbatim}
 \end{frame}
 
-\begin{frame}[fragile]{Views: Reduce}
-  \begin{semiverbatim}
-  function (keys, values, rereduce) \{
-    var ret = \{sum: 0, count: 0\};
-    if (\alert<2,3>{rereduce}) \{ \only<2-3>{//} \only<3>{\alert{true}}\only<2>{\alert{false}}
-      \alert<3>{for (var i = 0; i < values.length; ++i) \{
+\begin{frame}[fragile]{Views: Reduce. The Hard Way}
+  \begin{verbatim}
+  function (keys, values, rereduce) {
+    var ret = {sum: 0, count: 0};
+    if (rereduce) {
+      for (var i = 0; i < values.length; ++i) {
         ret.sum += values[i].sum;
         ret.count += values[i].count;
-      \}}
-    \} else \{
-      \alert<2>{ret.sum = sum(values);
-      ret.count = values.length;}
-    \}
+      }
+    } else {
+      ret.sum = sum(values);
+      ret.count = values.length;
+    }
     ret.avg = ret.sum / ret.count;
     return ret;
-  \}
-  \end{semiverbatim}
+  }
+  \end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Views: Reduce. Built-in reducers}
+  \begin{center}
+    {\Huge\bfseries Native Built-in Reducers}
+    \vskip1em
+    \url{http://www.couchbase.com/docs/couchbase-devguide-2.0/using-built-in-reduces.html}
+  \end{center}
+
+  \pause
+  \begin{verbatim}
+  _stats
+  \end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Views: Reduce. Built-in \texttt{\_stats}}
+  \begin{verbatim}
+  {
+    rows: [
+      {
+        key: "Belgian and French Ale",
+        value: {
+          sum: 1972.86,
+          count: 267,
+          min: 3.5,
+          max: 16,
+          sumsqr: 15772.54060000001
+        }
+      },
+      ....
+  \end{verbatim}
 \end{frame}
 
 \begin{frame}[fragile]{Views: Model}
-  \begin{verbatim}
+  \begin{semiverbatim}
   class Beer < Couchbase::Model
     ...
 
-    view :avg_by_category, :group => true,
-                           :include_docs => false
+    view :avg\_by\_category, \alert<2>{:group => true},
+                           :include\_docs => false
 
     ...
   end
-  \end{verbatim}
+  \end{semiverbatim}
 \end{frame}
 
 \begin{frame}[fragile]{Views: Execution}
   \begin{semiverbatim}
- 001:0> Beer.avg_by_category.each do |beer|
- 002:1*   printf("\alert<2>{\%s}: \alert<3>{\%.2f}\\n", \alert<2>{beer.key}, \alert<3>{beer.value["avg"]})
- 003:1> end
- \alert<2>{Belgian and French Ale}: \alert<3>{7.39}
- \alert<2>{British Ale}: \alert<3>{6.93}
- \alert<2>{German Ale}: \alert<3>{5.67}
- \alert<2>{German Lager}: \alert<3>{6.22}
- \alert<2>{Irish Ale}: \alert<3>{5.94}
- \alert<2>{North American Ale}: \alert<3>{6.79}
- \alert<2>{North American Lager}: \alert<3>{4.97}
- \alert<2>{Other Lager}: \alert<3>{4.55}
- \alert<2>{Other Style}: \alert<3>{5.82}
- nil
+  Beer.avg_by_category.each do |beer|
+    avg = beer.value["sum"] / beer.value["count"]
+    printf("\alert<3>{\%s}: \alert<4>{\%.2f}\\n", \alert<3>{beer.key}, \alert<4>{avg})
+  end
+  \end{semiverbatim}
+
+  \pause
+  \begin{semiverbatim}
+  \alert<3>{Belgian and French Ale}: \alert<4>{7.39}
+  \alert<3>{British Ale}: \alert<4>{6.93}
+  \alert<3>{German Ale}: \alert<4>{5.67}
+  \alert<3>{German Lager}: \alert<4>{6.22}
+  \alert<3>{Irish Ale}: \alert<4>{5.94}
+  \alert<3>{North American Ale}: \alert<4>{6.79}
+  \alert<3>{North American Lager}: \alert<4>{4.97}
+  \alert<3>{Other Lager}: \alert<4>{4.55}
+  \alert<3>{Other Style}: \alert<4>{5.82}
+  \end{semiverbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Views: Grouping}
+  In this example I'll use compound key to demonstrate
+  \texttt{group\_level} option to the view.
+
+  \begin{semiverbatim}
+  \pause
+  function(doc, meta) \{
+    if (doc.type == "brewery" \&\& doc.country \&\& doc.city) \{
+      emit(\alert<2>{[doc.country, doc.city]}, 1);
+    \}
+  \}
+  \pause
+
+  \_count
+  \end{semiverbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Views: Grouping: \texttt{group\_level = 2}}
+  \begin{semiverbatim}
+  # in this case group_level=2 behaves like group=true
+  Brewery.by_location(\alert<3>{:group_level => 2}).each do |doc|
+    puts [\alert<3>{doc.key}, doc.value].inspect
+  end
+  \end{semiverbatim}
+
+  \pause
+
+  \begin{semiverbatim}
+  [\alert<3>{["Argentina", "Mendoza"]}, 1]
+  [\alert<3>{["Argentina", "San Martin"]}, 1]
+  [\alert<3>{["Australia", "Adelaide"]}, 1]
+  [\alert<3>{["Australia", "Camperdown"]}, 1]
+  [\alert<3>{["Australia", "Canning Vale"]}, 1]
+  [\alert<3>{["Belgium", "Blaugies"]}, 1]
+  [\alert<3>{["Belgium", "Breendonk"]}, 2]
+  ...
+  \end{semiverbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Views: Grouping: \texttt{group\_level = 1}}
+  \begin{semiverbatim}
+  Brewery.by_location(\alert<3>{:group_level => 1}).each do |doc|
+    puts [\alert<3>{doc.key}, doc.value].inspect
+  end
+  \end{semiverbatim}
+
+  \pause
+
+  \begin{semiverbatim}
+  [\alert<3>{["Argentina"]}, 2]
+  [\alert<3>{["Australia"]}, 13]
+  [\alert<3>{["Austria"]}, 10]
+  [\alert<3>{["Belgium"]}, 98]
+  [\alert<3>{["Belize"]}, 1]
+  [\alert<3>{["Brazil"]}, 2]
+  [\alert<3>{["Canada"]}, 45]
+  [\alert<3>{["China"]}, 2]
+  ...
+  \end{semiverbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Views: Grouping: \texttt{group\_level = 0}}
+  \begin{semiverbatim}
+  # group_level=0 is default behaviour
+  Brewery.by_location(\alert<3>{:group_level => 0}).each do |doc|
+    puts [\alert<3>{doc.key}, doc.value].inspect
+  end
+  \end{semiverbatim}
+
+  \pause
+
+  \begin{semiverbatim}
+  [\alert<3>{nil}, 1390]
   \end{semiverbatim}
 \end{frame}
 
