@@ -367,6 +367,26 @@ function(doc, meta) {
   \end{verbatim}
 \end{frame}
 
+\begin{frame}[fragile]{Geospatial Views: execution}
+  \begin{semiverbatim}
+    # [latitude, longitude]
+    south_west = [12.748856941406302, 52.433943239089125]
+    north_east = [14.355607429687552, 52.68440663457806]
+    rect = [south\_west, north\_east].join(",")
+    Brewery.points(:bbox => rect).each do |doc|
+      printf("\alert<3>{\%s} at \alert<4>{\%d},\alert<4>{\%d}\\n",
+             \alert<3>{doc.name}, \alert<4>{doc.geo["lat"]}, \alert<4>{doc.geo["lng"]})
+    end
+  \end{semiverbatim}
+
+  \pause
+
+  \begin{semiverbatim}
+    \alert<3>{Berliner-Kindl-Schultheiss-Brauerei} at \alert<4>{52.5234},\alert<4>{13.4114}
+    \alert<3>{Berliner Kindl Brauerei AG} at \alert<4>{52.4793},\alert<4>{13.4293}
+  \end{semiverbatim}
+\end{frame}
+
 \begin{frame}{ElasticSearch Integration}
   \begin{center}
     {\Huge\bfseries Rich queries with ElasticSearch}
@@ -375,5 +395,5 @@ function(doc, meta) {
   \end{center}
 \end{frame}
 
-\thanks
+\thanksAndQuestions{https://speakerdeck.com/avsej/couchbase-and-rails}
 \end{document}
